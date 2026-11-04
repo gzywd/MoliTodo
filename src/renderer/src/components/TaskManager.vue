@@ -2,9 +2,7 @@
   <div class="task-manager">
     <!-- 左侧边栏 - 导航 -->
     <aside class="task-manager-sidebar">
-      <SidebarNav :current-category="currentCategory" :today-count-override="todayPendingCount"
-        :current-tool="currentTool"
-        @category-change="switchCategory" @open-settings="openSettings" @tool-change="handleToolChange" />
+      <SidebarNav @open-settings="openSettings" />
     </aside>
 
     <!-- 主要内容区域 -->
@@ -366,26 +364,6 @@ const loadTasks = async () => {
   }
 }
 
-const switchCategory = (category) => {
-  taskStore.setCurrentTool('tasks')
-  taskStore.setCurrentCategory(category)
-  taskStore.setCurrentListId(null) // 切换智能分类时清除清单选择
-  taskStore.clearSearch()
-
-  // 切换分类时关闭编辑面板
-  handleHideEditPanel()
-
-  // 如果切换到不支持特殊视图的分类，则自动切换到列表视图
-  if (viewMode.value === 'monthly' && !['all', 'planned'].includes(category)) {
-    viewMode.value = 'list'
-  }
-}
-
-const handleToolChange = (tool) => {
-  taskStore.setCurrentTool(tool)
-  handleHideEditPanel()
-}
-
 const handleAddTask = async (taskData) => {
   try {
     // 如果传入的是字符串（向后兼容），转换为对象
@@ -717,6 +695,11 @@ onMounted(async () => {
     taskStore.getRecurringTasks(), // 加载重复任务数据
     loadTasks()
   ])
+
+  // 侧栏只保留默认清单：启动即定位到默认清单
+  taskStore.setCurrentTool('tasks')
+  taskStore.setCurrentCategory('all')
+  taskStore.setCurrentListId(0)
 
   // 初始化最后更新时间
   const timeResult = await window.electronAPI.tasks.getLastUpdatedTime()

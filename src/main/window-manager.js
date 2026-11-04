@@ -882,7 +882,8 @@ class WindowManager {
       this.updateTrayMenu().catch(console.error);
 
       this.tray.on('click', () => {
-        this.toggleMenuBarPanel();
+        // 直接打开任务管理窗口，启动后定位在默认清单
+        this.createTaskManagerWindow();
       });
 
       // 右键保留原生菜单作为次要入口（包含退出等）。

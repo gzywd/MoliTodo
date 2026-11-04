@@ -1,9 +1,6 @@
 <template>
-  <!-- 清单分组标题 -->
-  <div class="nav-section-title">{{ $t('lists.myLists') }}</div>
-
-  <!-- 清单项直接输出，不包装额外容器 -->
-  <template v-for="list in sortedLists" :key="list.id">
+  <!-- 侧栏只保留默认清单 -->
+  <template v-for="list in defaultListOnly" :key="list.id">
     <button type="button" class="nav-item" :data-list-id="list.id"
       :class="{ 
         active: !toolsActive && currentListId === list.id,
@@ -119,6 +116,8 @@ export default {
     const currentCategory = computed(() => taskStore.currentCategory)
     const currentListId = computed(() => taskStore.currentListId)
     const sortedLists = computed(() => taskStore.sortedLists)
+    // 侧栏只保留默认清单，其余清单不再展示
+    const defaultListOnly = computed(() => sortedLists.value.filter(list => list.isDefault))
     const categoryCounts = computed(() => taskStore.categoryCounts)
     const listTaskCounts = computed(() => taskStore.listTaskCounts)
 
@@ -337,6 +336,7 @@ export default {
       currentCategory,
       currentListId,
       sortedLists,
+      defaultListOnly,
 
       // 方法
       selectList,
