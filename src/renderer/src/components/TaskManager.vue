@@ -1,11 +1,6 @@
 <template>
   <div class="task-manager">
-    <!-- 左侧边栏 - 导航 -->
-    <aside class="task-manager-sidebar">
-      <SidebarNav @open-settings="openSettings" />
-    </aside>
-
-    <!-- 主要内容区域 -->
+    <!-- 主要内容区域（左侧栏已移除，内容占满窗口） -->
     <main v-if="currentTool === 'tasks'" class="task-manager-main-content pt-4 flex flex-col">
       <!-- 当前分类标题区域 -->
       <div class="task-manager-category-header">
@@ -74,6 +69,13 @@
             :label="showCompletedTasks ? $t('tasks.hideCompleted') : $t('tasks.showCompleted')"
             @click="toggleCompletedTasks">
             <CircleCheck class="h-icon-md w-icon-md" />
+          </IconButton>
+
+          <!-- 设置（左侧栏已移除，入口放在标题栏右侧） -->
+          <IconButton variant="outline"
+            class="task-manager-action-btn h-control-lg w-control-lg text-muted-foreground"
+            :label="$t('settings.title')" @click="openSettings">
+            <Settings class="h-icon-md w-icon-md" />
           </IconButton>
         </div>
       </div>
@@ -195,12 +197,11 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { CalendarDays, CircleCheck, Columns3, Info, List, Search, X } from '@lucide/vue'
+import { CalendarDays, CircleCheck, Columns3, Info, List, Search, Settings, X } from '@lucide/vue'
 import { useTaskStore } from '@/store/taskStore'
 import { useToolsStore } from '@/store/toolsStore'
 import FlatTaskList from './FlatTaskList.vue'
 import MonthlyView from './calender_view/MonthlyView.vue'
-import SidebarNav from './SidebarNav.vue'
 import TaskEditVertical from './TaskEditVertical.vue'
 import KanbanBoard from './kanban_view/KanbanBoard.vue'
 import TaskDetailsModal from './TaskDetailsModal.vue'

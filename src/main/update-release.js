@@ -4,7 +4,7 @@
  * 这里不依赖 Electron，方便在 node:test 中直接验证版本比较与安装包选择逻辑。
  */
 
-const REPOSITORY = 'gusibi/MoliTodo';
+const REPOSITORY = 'gzywd/MoliTodo';
 const RELEASE_API_URL = `https://api.github.com/repos/${REPOSITORY}/releases/latest`;
 const RELEASE_PAGE_URL = `https://github.com/${REPOSITORY}/releases`;
 const RELEASE_DOWNLOAD_BASE = `https://github.com/${REPOSITORY}/releases/download`;

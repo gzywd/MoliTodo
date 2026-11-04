@@ -134,17 +134,17 @@
       <h3 class="setting-group-title">{{ $t('settings.about.projectInfo') }}</h3>
       
       <div class="about-project-links">
-        <Button variant="outline" class="about-project-link" @click="openLink('https://github.com/gusibi/MoliTodo')">
+        <Button variant="outline" class="about-project-link" @click="openLink('https://github.com/gzywd/MoliTodo')">
           <Code2 class="h-icon-sm w-icon-sm" aria-hidden="true" />
           {{ $t('settings.about.githubRepo') }}
         </Button>
         <Button variant="outline" class="about-project-link"
-          @click="openLink('https://github.com/gusibi/MoliTodo/issues')">
+          @click="openLink('https://github.com/gzywd/MoliTodo/issues')">
           <Bug class="h-icon-sm w-icon-sm" aria-hidden="true" />
           {{ $t('settings.about.reportIssue') }}
         </Button>
         <Button variant="outline" class="about-project-link"
-          @click="openLink('https://github.com/gusibi/MoliTodo/releases')">
+          @click="openLink('https://github.com/gzywd/MoliTodo/releases')">
           <Tag class="h-icon-sm w-icon-sm" aria-hidden="true" />
           {{ $t('settings.about.releases') }}
         </Button>
@@ -195,7 +195,7 @@ const updateState = ref({
   totalBytes: 0,
   error: null,
   isTranslocated: false,
-  releaseUrl: 'https://github.com/gusibi/MoliTodo/releases'
+  releaseUrl: 'https://github.com/gzywd/MoliTodo/releases'
 })
 
 let unsubscribeUpdateState = null
@@ -354,11 +354,11 @@ const installUpdate = async () => {
 }
 
 const openReleasePage = async () => {
-  await openLink(updateState.value.releaseUrl || 'https://github.com/gusibi/MoliTodo/releases')
+  await openLink(updateState.value.releaseUrl || 'https://github.com/gzywd/MoliTodo/releases')
 }
 
 const openChangelog = async () => {
-  await openLink('https://github.com/gusibi/MoliTodo/blob/main/CHANGELOG.md')
+  await openLink('https://github.com/gzywd/MoliTodo/blob/main/CHANGELOG.md')
 }
 
 const openLink = async (url) => {

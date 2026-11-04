@@ -101,7 +101,7 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "gusibi",
+        "owner": "gzywd",
         "repo": "MoliTodo"
       }
     ],

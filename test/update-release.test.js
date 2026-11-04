@@ -66,6 +66,6 @@ test('selectMacAsset ignores non-dmg entries and falls back to the first candida
 test('buildDownloadUrl points at the release asset', () => {
   assert.equal(
     buildDownloadUrl('v1.5.4', 'MoliTodo-1.5.4-arm64.dmg'),
-    'https://github.com/gusibi/MoliTodo/releases/download/v1.5.4/MoliTodo-1.5.4-arm64.dmg'
+    'https://github.com/gzywd/MoliTodo/releases/download/v1.5.4/MoliTodo-1.5.4-arm64.dmg'
   )
 })
