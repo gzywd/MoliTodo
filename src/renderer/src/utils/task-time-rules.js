@@ -204,6 +204,25 @@ export function belongsToCategory(task, category) {
 }
 
 /**
+ * 任务用于「按时间排序」的时间点：优先安排开始，其次截止，最后提醒时间。
+ * 三者都不存在时返回 null，表示该任务没有可用于排序的时间。
+ */
+export function taskSortTimestamp(task) {
+  if (!task) return null
+
+  const start = scheduleStartDate(task)
+  if (start) return start.getTime()
+
+  const deadline = deadlineBoundary(task.dueDate, task.dueTime)
+  if (deadline) return deadline.getTime()
+
+  const reminder = toDate(task.reminderTime)
+  if (reminder) return reminder.getTime()
+
+  return null
+}
+
+/**
  * 同一日期内的稳定排序：有安排的按开始时间升序；只有截止的排在其后。
  */
 export function compareTasksForDate(a, b) {

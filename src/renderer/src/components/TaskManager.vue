@@ -213,6 +213,7 @@ import ListIcon from './ui/ListIcon.vue'
 import IconButton from './ui/button/IconButton.vue'
 import AlertDialog from './ui/alert-dialog/AlertDialog.vue'
 import { useDeleteConfirm } from '@/composables/useDeleteConfirm.js'
+import { compareTasksForDate, taskSortTimestamp } from '@/utils/task-time-rules.js'
 
 
 const { t, locale } = useI18n()
@@ -281,6 +282,19 @@ const showTaskDetailsModal = ref(false)
 
 // 计算属性
 const loading = computed(() => taskStore.loading)
+
+// 默认清单按时间升序：复用共享时间规则，安排开始 > 截止 > 提醒时间，无时间信息的任务排在最后
+const sortTasksByTime = (tasks) => {
+  const timed = []
+  const untimed = []
+  tasks.forEach(task => (taskSortTimestamp(task) === null ? untimed : timed).push(task))
+  timed.sort((a, b) => {
+    const diff = taskSortTimestamp(a) - taskSortTimestamp(b)
+    return diff !== 0 ? diff : compareTasksForDate(a, b)
+  })
+  return [...timed, ...untimed]
+}
+
 const displayTasks = computed(() => {
   // 使用 taskStore 的统一过滤方法
   const currentCategory = taskStore.currentCategory
@@ -288,7 +302,13 @@ const displayTasks = computed(() => {
 
   // 根据当前分类和是否显示已完成任务来获取任务
   const includeCompleted = showCompletedTasks.value
-  return taskStore.getSortedTasks(currentCategory, currentListId, includeCompleted)
+  const tasks = taskStore.getSortedTasks(currentCategory, currentListId, includeCompleted)
+
+  // 默认清单固定按时间升序排列；看板与月视图保持原有顺序
+  if (currentListId === 0 && viewMode.value === 'list') {
+    return sortTasksByTime(tasks)
+  }
+  return tasks
 })
 const currentCategory = computed(() => taskStore.currentCategory)
 const currentListId = computed(() => taskStore.currentListId)
