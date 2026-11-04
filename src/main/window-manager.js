@@ -338,6 +338,15 @@ class WindowManager {
       this.taskManagerWindow.show();
     });
 
+    // 兜底：部分机器上 ready-to-show 可能不触发（GPU/窗口合成异常），
+    // 页面加载完成后若窗口仍不可见则强制显示，避免"点了没反应"。
+    this.taskManagerWindow.webContents.once('did-finish-load', () => {
+      if (this.taskManagerWindow && !this.taskManagerWindow.isDestroyed() && !this.taskManagerWindow.isVisible()) {
+        this.taskManagerWindow.show();
+        this.taskManagerWindow.focus();
+      }
+    });
+
     this.taskManagerWindow.on('closed', () => {
       this.taskManagerWindow = null;
     });
@@ -883,7 +892,21 @@ class WindowManager {
 
       this.tray.on('click', () => {
         // 直接打开任务管理窗口，启动后定位在默认清单
-        this.createTaskManagerWindow();
+        try {
+          this.createTaskManagerWindow();
+        } catch (error) {
+          console.error('[tray] 打开任务管理窗口失败:', error);
+          // 兜底：至少让用户看到菜单栏面板
+          this.toggleMenuBarPanel();
+        }
+      });
+
+      this.tray.on('double-click', () => {
+        try {
+          this.createTaskManagerWindow();
+        } catch (error) {
+          console.error('[tray] 双击打开任务管理窗口失败:', error);
+        }
       });
 
       // 右键保留原生菜单作为次要入口（包含退出等）。
