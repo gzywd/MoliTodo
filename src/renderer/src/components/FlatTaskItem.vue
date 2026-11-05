@@ -62,6 +62,13 @@
               <i class="fas fa-calendar"></i>
               <span>{{ formatReminderTime(task.reminderTime) }}</span>
             </div>
+            <!-- 兼容 1.5.x 的时间字段（安排开始 / 截止），只读展示 -->
+            <div class="flat-task-reminder-time" v-else-if="getTaskEffectiveTime(task)" :class="{
+              'flat-task-time-overdue': getTaskEffectiveTime(task) < Date.now() && task.status !== 'done'
+            }">
+              <i class="fas fa-calendar"></i>
+              <span>{{ formatReminderTime(getTaskEffectiveTime(task)) }}</span>
+            </div>
 
             <!-- 进行时间 -->
             <div v-if="task.status === 'doing' && !isTaskOvertime(task)" class="flat-task-time flat-task-time-doing">
@@ -117,7 +124,7 @@
 
 <script setup>
 
-import { isTaskOvertime, formatDuration, formatReminderTime, getCurrentDuration } from '../utils/task-utils'
+import { isTaskOvertime, formatDuration, formatReminderTime, getCurrentDuration, getTaskEffectiveTime } from '../utils/task-utils'
 import { useTaskStore } from '@/store/taskStore'
 import { ref } from 'vue'
 

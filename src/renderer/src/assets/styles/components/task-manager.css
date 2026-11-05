@@ -23,8 +23,8 @@
 /* 主要内容区域样式 */
 .task-manager-main-content {
   @apply flex flex-col overflow-hidden relative bg-background m-2 rounded-lg shadow-lg;
-  /* 使用 calc 计算固定宽度，减去侧边栏宽度和 margin */
-  width: calc(100% - 280px - 16px);
+  /* 左侧栏已隐藏，主内容占满窗口（保留 m-2 的边距） */
+  width: calc(100% - 16px);
   height: calc(100vh - 16px); /* 减去margin */
   min-height: 0; /* 重要：允许flex子元素收缩 */
 }

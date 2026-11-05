@@ -97,15 +97,15 @@
       <h3 class="setting-group-title">{{ $t('settings.about.projectInfo') }}</h3>
       
       <div class="about-project-links">
-        <button class="about-project-link" @click="openLink('https://github.com/gusibi/MoliTodo')">
+        <button class="about-project-link" @click="openLink('https://github.com/gzywd/MoliTodo')">
           <i class="fab fa-github"></i>
           {{ $t('settings.about.githubRepo') }}
         </button>
-        <button class="about-project-link" @click="openLink('https://github.com/gusibi/MoliTodo/issues')">
+        <button class="about-project-link" @click="openLink('https://github.com/gzywd/MoliTodo/issues')">
           <i class="fas fa-bug"></i>
           {{ $t('settings.about.reportIssue') }}
         </button>
-        <button class="about-project-link" @click="openLink('https://github.com/gusibi/MoliTodo/releases')">
+        <button class="about-project-link" @click="openLink('https://github.com/gzywd/MoliTodo/releases')">
           <i class="fas fa-tag"></i>
           {{ $t('settings.about.releases') }}
         </button>
@@ -161,7 +161,7 @@ const checkForUpdates = async () => {
   
   try {
     // 检查 GitHub API 获取最新版本
-    const response = await fetch('https://api.github.com/repos/gusibi/MoliTodo/releases/latest')
+    const response = await fetch('https://api.github.com/repos/gzywd/MoliTodo/releases/latest')
     
     if (!response.ok) {
       throw new Error('Failed to fetch release info')
@@ -194,7 +194,7 @@ const downloadUpdate = async () => {
 }
 
 const openChangelog = async () => {
-  await openLink('https://github.com/gusibi/MoliTodo/blob/main/CHANGELOG.md')
+  await openLink('https://github.com/gzywd/MoliTodo/blob/main/CHANGELOG.md')
 }
 
 const openLink = async (url) => {

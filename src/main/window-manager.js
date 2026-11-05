@@ -461,7 +461,13 @@ class WindowManager {
       this.updateTrayMenu().catch(console.error);
 
       this.tray.on('click', () => {
-        this.tray.popUpContextMenu();
+        // 直接打开任务管理窗口，启动后定位在默认清单
+        try {
+          this.createTaskManagerWindow();
+        } catch (error) {
+          console.error('[tray] 打开任务管理窗口失败:', error);
+          this.tray.popUpContextMenu();
+        }
       });
     } catch (error) {
       console.warn('无法创建系统托盘:', error.message);

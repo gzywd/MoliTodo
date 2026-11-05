@@ -1,9 +1,5 @@
 <template>
   <div class="task-manager">
-    <!-- 左侧边栏 - 导航 -->
-    <aside class="task-manager-sidebar">
-      <SidebarNav :current-category="currentCategory" @category-change="switchCategory" @open-settings="openSettings" />
-    </aside>
 
     <!-- 主要内容区域 -->
     <main class="task-manager-main-content pt-4 flex flex-col">
@@ -61,6 +57,10 @@
             :class="['task-manager-action-btn', { 'active': showCompletedTasks }]"
             :title="showCompletedTasks ? $t('tasks.hideCompleted') : $t('tasks.showCompleted')">
             <i class="fas fa-check-circle"></i>
+          </button>
+          <!-- 设置（左侧栏已隐藏，入口放在标题栏右侧） -->
+          <button @click="openSettings" class="task-manager-action-btn" :title="$t('settings.title')">
+            <i class="fas fa-cog"></i>
           </button>
         </div>
       </div>
@@ -162,11 +162,11 @@ import { useI18n } from 'vue-i18n'
 import { useTaskStore } from '@/store/taskStore'
 import FlatTaskList from './FlatTaskList.vue'
 import MonthlyView from './calender_view/MonthlyView.vue'
-import SidebarNav from './SidebarNav.vue'
 import TaskEditVertical from './TaskEditVertical.vue'
 import KanbanBoard from './kanban_view/KanbanBoard.vue'
 import TaskDetailsModal from './TaskDetailsModal.vue'
 import { getListIconClass } from '@/utils/icon-utils'
+import { getTaskEffectiveTime } from '@/utils/task-utils'
 
 
 const { t, locale } = useI18n()
@@ -221,6 +221,15 @@ const showTaskDetailsModal = ref(false)
 
 // 计算属性
 const loading = computed(() => taskStore.loading)
+// 默认清单按时间升序：安排开始 > 截止 > 提醒时间，无时间信息的任务排在最后
+const sortTasksByTime = (tasks) => {
+  const timed = []
+  const untimed = []
+  tasks.forEach(task => (getTaskEffectiveTime(task) === null ? untimed : timed).push(task))
+  timed.sort((a, b) => getTaskEffectiveTime(a) - getTaskEffectiveTime(b))
+  return [...timed, ...untimed]
+}
+
 const displayTasks = computed(() => {
   // 使用 taskStore 的统一过滤方法
   const currentCategory = taskStore.currentCategory
@@ -228,7 +237,13 @@ const displayTasks = computed(() => {
 
   // 根据当前分类和是否显示已完成任务来获取任务
   const includeCompleted = showCompletedTasks.value
-  return taskStore.getSortedTasks(currentCategory, currentListId, includeCompleted)
+  const tasks = taskStore.getSortedTasks(currentCategory, currentListId, includeCompleted)
+
+  // 默认清单固定按时间升序排列；看板与月视图保持原有顺序
+  if (currentListId === 0 && viewMode.value === 'list') {
+    return sortTasksByTime(tasks)
+  }
+  return tasks
 })
 const currentCategory = computed(() => taskStore.currentCategory)
 const currentListId = computed(() => taskStore.currentListId)
@@ -624,6 +639,10 @@ onMounted(async () => {
     taskStore.getRecurringTasks(), // 加载重复任务数据
     loadTasks()
   ])
+
+    // 左侧栏已隐藏：启动即定位到默认清单
+    taskStore.setCurrentCategory('all')
+    taskStore.setCurrentListId(0)
 
   // 初始化最后更新时间
   const timeResult = await window.electronAPI.tasks.getLastUpdatedTime()

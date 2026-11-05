@@ -162,3 +162,25 @@ export const getDueDateCssClass = (dueDate) => {
   
   return 'kanban-card-time'
 }
+/**
+ * 任务用于排序与展示的时间点：优先安排开始，其次截止，最后提醒时间。
+ * v1.4.5 本身没有安排开始字段，但从 1.5.x 升级过来的任务会带 scheduledStartAt。
+ */
+export const getTaskEffectiveTime = (task) => {
+  if (!task) return null
+  if (task.scheduledStartAt) {
+    const scheduled = new Date(task.scheduledStartAt).getTime()
+    if (!Number.isNaN(scheduled)) return scheduled
+  }
+  if (task.dueDate) {
+    const datePart = String(task.dueDate).slice(0, 10)
+    const timePart = task.dueTime && /^\d{1,2}:\d{2}$/.test(task.dueTime) ? task.dueTime : '00:00'
+    const due = new Date(`${datePart}T${timePart}:00`).getTime()
+    if (!Number.isNaN(due)) return due
+  }
+  if (task.reminderTime) {
+    const reminder = new Date(task.reminderTime).getTime()
+    if (!Number.isNaN(reminder)) return reminder
+  }
+  return null
+}

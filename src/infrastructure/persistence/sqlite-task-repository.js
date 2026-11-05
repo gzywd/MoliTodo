@@ -403,6 +403,9 @@ class SqliteTaskRepository {
 
     task.updatedAt = new Date(row.updated_at);
 
+    // 兼容 1.5.x 的时间字段：只读，不写回，仅用于列表展示与排序
+    task.scheduledStartAt = row.scheduled_start_at ? new Date(row.scheduled_start_at) : null;
+
     return task;
   }
 
