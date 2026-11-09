@@ -73,6 +73,9 @@ class MoliTodoApp {
       // 设置应用事件
       this.setupAppEvents();
 
+      // 启动即打开主窗口（不再依赖托盘：托盘点击在部分机器上不可靠）
+      this.windowManager.createTaskManagerWindow();
+
       console.log('MoliTodo Vue 应用已启动');
       
       // 应用完全启动后的初始化任务
@@ -194,10 +197,8 @@ class MoliTodoApp {
       if (this.windowManager.taskManagerWindow && !this.windowManager.taskManagerWindow.isDestroyed()) {
         this.windowManager.taskManagerWindow.focus();
       } else {
-        // 否则显示悬浮图标
-        if (this.windowManager.floatingWindow && !this.windowManager.floatingWindow.isDestroyed()) {
-          this.windowManager.floatingWindow.show();
-        }
+        // 悬浮图标默认隐藏：再次启动（例如双击桌面图标）直接打开任务管理窗口
+        this.windowManager.createTaskManagerWindow();
       }
     });
   }

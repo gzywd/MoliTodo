@@ -431,6 +431,18 @@ class WindowManager {
     return this.isPanelPinned || false;
   }
 
+  // 托盘事件写文件，便于定位"点了没反应"到底是事件没到还是建窗口失败
+  logTrayEvent(message) {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const file = path.join(require('electron').app.getPath('userData'), 'tray-click.log');
+      fs.appendFileSync(file, new Date().toISOString() + ' ' + message + '\n');
+    } catch (e) {
+      // 日志失败不影响功能
+    }
+  }
+
   createTray() {
     try {
       const trayIconPath = this.getTrayIconPath();
@@ -460,13 +472,28 @@ class WindowManager {
 
       this.updateTrayMenu().catch(console.error);
 
+      // 左键：打开任务管理窗口（默认清单）
       this.tray.on('click', () => {
-        // 直接打开任务管理窗口，启动后定位在默认清单
+        this.logTrayEvent('left-click');
         try {
           this.createTaskManagerWindow();
+          this.logTrayEvent('left-click -> createTaskManagerWindow ok');
         } catch (error) {
-          console.error('[tray] 打开任务管理窗口失败:', error);
-          this.tray.popUpContextMenu();
+          this.logTrayEvent('left-click -> FAILED: ' + (error && error.message));
+          console.error('[tray] 左键打开任务管理窗口失败:', error);
+        }
+      });
+
+      // 右键：同样打开任务管理窗口。
+      // 注意不要用 popUpContextMenu()，它会进入模态菜单循环，异常时会把主线程锁死。
+      this.tray.on('right-click', () => {
+        this.logTrayEvent('right-click');
+        try {
+          this.createTaskManagerWindow();
+          this.logTrayEvent('right-click -> createTaskManagerWindow ok');
+        } catch (error) {
+          this.logTrayEvent('right-click -> FAILED: ' + (error && error.message));
+          console.error('[tray] 右键打开任务管理窗口失败:', error);
         }
       });
     } catch (error) {
@@ -541,7 +568,10 @@ class WindowManager {
       }
     ]);
 
-    this.tray.setContextMenu(contextMenu);
+    // 不用 setContextMenu：它会接管点击事件并进入 Windows 模态菜单循环，
+    // 和下面的 click/right-click 处理器冲突，曾导致主线程卡死、托盘完全无响应。
+    // 菜单仅保留给"退出"等场景，通过右键处理器自行弹出（见 createTray）。
+    this.trayContextMenu = contextMenu;
 
     // 更新托盘工具提示显示任务数量
     const tooltipText = todayTaskCount > 0
